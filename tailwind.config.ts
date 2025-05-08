@@ -1,3 +1,4 @@
+
 import type { Config } from "tailwindcss";
 
 export default {
@@ -61,6 +62,13 @@ export default {
 					'accent-foreground': 'hsl(var(--sidebar-accent-foreground))',
 					border: 'hsl(var(--sidebar-border))',
 					ring: 'hsl(var(--sidebar-ring))'
+				},
+				// Custom colors for the pond game
+				pond: {
+					water: '#A5D8FF',
+					dark: '#67B4DE',
+					leaf: '#7AC74F',
+					leafDark: '#4D8B31',
 				}
 			},
 			borderRadius: {
@@ -84,11 +92,22 @@ export default {
 					to: {
 						height: '0'
 					}
+				},
+				'frog-jump': {
+					'0%': { transform: 'translateY(0)' },
+					'50%': { transform: 'translateY(-20px)' },
+					'100%': { transform: 'translateY(0)' }
+				},
+				'leaf-sink': {
+					'0%': { transform: 'translateY(0)', opacity: '1' },
+					'100%': { transform: 'translateY(20px)', opacity: '0' }
 				}
 			},
 			animation: {
 				'accordion-down': 'accordion-down 0.2s ease-out',
-				'accordion-up': 'accordion-up 0.2s ease-out'
+				'accordion-up': 'accordion-up 0.2s ease-out',
+				'frog-jump': 'frog-jump 0.5s ease-in-out',
+				'leaf-sink': 'leaf-sink 1s ease-in-out forwards'
 			}
 		}
 	},

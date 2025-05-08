@@ -1,38 +1,42 @@
 
 import { useState } from "react";
-import FrogGame from "@/components/FrogGame";
+import QuantumCryptoSimulator from "@/components/QuantumCryptoSimulator";
 
 const Index = () => {
-  const [isGameStarted, setIsGameStarted] = useState(false);
+  const [isSimulationStarted, setIsSimulationStarted] = useState(false);
 
   return (
-    <div className="min-h-screen flex flex-col bg-gradient-to-b from-blue-100 to-blue-200">
-      {!isGameStarted ? (
+    <div className="min-h-screen flex flex-col bg-gradient-to-b from-indigo-900 to-blue-900">
+      {!isSimulationStarted ? (
         <div className="flex flex-col items-center justify-center h-screen p-6">
-          <h1 className="text-4xl font-bold mb-6 text-center text-emerald-700">
-            Freddy Frog Jumps Again!
+          <h1 className="text-4xl font-bold mb-6 text-center text-cyan-300">
+            Quantum-Safe Cryptography for Secure Cloud Data Access
           </h1>
-          <div className="max-w-xl bg-white/80 backdrop-blur-sm p-8 rounded-lg shadow-lg">
+          <div className="max-w-2xl bg-white/10 backdrop-blur-sm p-8 rounded-lg shadow-lg text-white">
             <p className="text-lg mb-6">
-              Apaar is relaxing beside a large pond, while his pet frog Freddy is enjoying hopping between leaves.
-              Help Freddy navigate through the pond by following Apaar's commands!
+              This project demonstrates a cutting-edge system designed to enhance the security of cloud data access
+              through the integration of post-quantum cryptography and Attribute-Based Encryption (ABE).
+            </p>
+            <p className="mb-6">
+              The system implements advanced post-quantum cryptographic algorithms to ensure resilience against quantum attacks,
+              with a specific focus on Attribute-Based Encryption for fine-grained access control to encrypted data.
             </p>
             <ul className="list-disc pl-6 mb-6 space-y-2">
-              <li><span className="font-bold">A</span>: Jump diagonally up-right (x+Z, y+Z)</li>
-              <li><span className="font-bold">B</span>: Jump diagonally down-right (x+Z, y-Z)</li>
-              <li><span className="font-bold">C</span>: Jump diagonally up-left (x-Z, y+Z)</li>
-              <li><span className="font-bold">D</span>: Jump diagonally down-left (x-Z, y-Z)</li>
+              <li><span className="font-bold">Key Generation:</span> Using Kyber512 lattice-based cryptography</li>
+              <li><span className="font-bold">Public Key Management:</span> Secure key storage and distribution</li>
+              <li><span className="font-bold">Shared Key Generation:</span> Secure key encapsulation mechanisms</li>
+              <li><span className="font-bold">Attribute-Based Encryption:</span> Fine-grained access control</li>
             </ul>
             <button 
-              onClick={() => setIsGameStarted(true)}
-              className="w-full bg-emerald-600 hover:bg-emerald-700 text-white py-3 px-6 rounded-md font-medium transition-colors shadow-md"
+              onClick={() => setIsSimulationStarted(true)}
+              className="w-full bg-cyan-600 hover:bg-cyan-700 text-white py-3 px-6 rounded-md font-medium transition-colors shadow-md"
             >
-              Start Game
+              Start Simulation
             </button>
           </div>
         </div>
       ) : (
-        <FrogGame />
+        <QuantumCryptoSimulator />
       )}
     </div>
   );

@@ -5,41 +5,17 @@ import { Card, CardContent } from "@/components/ui/card";
 import { ToggleGroup, ToggleGroupItem } from "@/components/ui/toggle-group";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Bar, BarChart, CartesianGrid, Legend, Rectangle, ResponsiveContainer, Tooltip, XAxis, YAxis } from "recharts";
+import { useSimulation } from "@/contexts/SimulationContext";
 
 const ALGORITHMS = ["GPSO", "HSGA", "Hybrid GA+PSO"];
 
-type Task = {
-  id: number;
-  length: number;
-  vm: number | null;
-  startTime: number | null;
-  endTime: number | null;
-};
-
-type VM = {
-  id: number;
-  processingPower: number;
-  tasks: number[];
-  busyUntil: number;
-};
-
 const TaskSimulation = () => {
+  const { tasks: importedTasks, vms: importedVMs, setTasks, setVMs } = useSimulation();
   const [selectedAlgorithm, setSelectedAlgorithm] = useState<string>("GPSO");
   const [isRunning, setIsRunning] = useState<boolean>(false);
   const [simulationStep, setSimulationStep] = useState<number>(0);
-  const [tasks, setTasks] = useState<Task[]>([
-    { id: 1, length: 40, vm: null, startTime: null, endTime: null },
-    { id: 2, length: 60, vm: null, startTime: null, endTime: null },
-    { id: 3, length: 30, vm: null, startTime: null, endTime: null },
-    { id: 4, length: 80, vm: null, startTime: null, endTime: null },
-    { id: 5, length: 50, vm: null, startTime: null, endTime: null },
-    { id: 6, length: 70, vm: null, startTime: null, endTime: null },
-  ]);
-  const [vms, setVMs] = useState<VM[]>([
-    { id: 1, processingPower: 10, tasks: [], busyUntil: 0 },
-    { id: 2, processingPower: 15, tasks: [], busyUntil: 0 },
-    { id: 3, processingPower: 8, tasks: [], busyUntil: 0 },
-  ]);
+  const [tasks, setLocalTasks] = useState(importedTasks);
+  const [vms, setLocalVMs] = useState(importedVMs);
 
   const simulationData = [
     {
@@ -64,27 +40,30 @@ const TaskSimulation = () => {
 
   const runSimulation = () => {
     setIsRunning(true);
-    // Reset simulation
-    setTasks(tasks.map(task => ({ ...task, vm: null, startTime: null, endTime: null })));
-    setVMs(vms.map(vm => ({ ...vm, tasks: [], busyUntil: 0 })));
+    // Reset simulation with the latest imported tasks and VMs
+    const resetTasks = importedTasks.map(task => ({ ...task, vm: null, startTime: null, endTime: null }));
+    const resetVMs = importedVMs.map(vm => ({ ...vm, tasks: [], busyUntil: 0 }));
+    
+    setLocalTasks(resetTasks);
+    setLocalVMs(resetVMs);
     setSimulationStep(0);
     
     // Run simulation steps
     const intervalId = setInterval(() => {
       setSimulationStep(step => {
-        if (step >= tasks.length) {
+        if (step >= resetTasks.length) {
           clearInterval(intervalId);
           setIsRunning(false);
           return step;
         }
         
         // Simplified algorithm simulation - in reality would implement the actual algorithms
-        const taskToAssign = { ...tasks[step] };
+        const taskToAssign = { ...resetTasks[step] };
         let bestVM = 0;
         let earliestFinish = Infinity;
         
         // Simple greedy assignment based on earliest finish time
-        vms.forEach((vm, index) => {
+        resetVMs.forEach((vm, index) => {
           const startTime = vm.busyUntil;
           const processTime = taskToAssign.length / vm.processingPower;
           const finishTime = startTime + processTime;
@@ -96,8 +75,8 @@ const TaskSimulation = () => {
         });
         
         // Update task and VM
-        const updatedTasks = [...tasks];
-        const updatedVMs = [...vms];
+        const updatedTasks = [...resetTasks];
+        const updatedVMs = [...resetVMs];
         
         const vmIndex = bestVM;
         const startTime = updatedVMs[vmIndex].busyUntil;
@@ -117,6 +96,10 @@ const TaskSimulation = () => {
           busyUntil: endTime
         };
         
+        setLocalTasks(updatedTasks);
+        setLocalVMs(updatedVMs);
+        
+        // Also update the context state
         setTasks(updatedTasks);
         setVMs(updatedVMs);
         
@@ -128,8 +111,10 @@ const TaskSimulation = () => {
   const resetSimulation = () => {
     setIsRunning(false);
     setSimulationStep(0);
-    setTasks(tasks.map(task => ({ ...task, vm: null, startTime: null, endTime: null })));
-    setVMs(vms.map(vm => ({ ...vm, tasks: [], busyUntil: 0 })));
+    const resetTasks = importedTasks.map(task => ({ ...task, vm: null, startTime: null, endTime: null }));
+    const resetVMs = importedVMs.map(vm => ({ ...vm, tasks: [], busyUntil: 0 }));
+    setLocalTasks(resetTasks);
+    setLocalVMs(resetVMs);
   };
 
   return (
@@ -167,6 +152,8 @@ const TaskSimulation = () => {
               <p>Current Step: {simulationStep} / {tasks.length}</p>
               <p>Algorithm: {selectedAlgorithm}</p>
               <p>Status: {isRunning ? "Running..." : simulationStep > 0 ? "Completed" : "Ready"}</p>
+              <p className="mt-2 text-sm">Tasks Loaded: {importedTasks.length}</p>
+              <p className="text-sm">VMs Loaded: {importedVMs.length}</p>
             </div>
           </CardContent>
         </Card>

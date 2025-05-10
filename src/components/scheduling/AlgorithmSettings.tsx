@@ -14,6 +14,7 @@ import {
   DialogTrigger,
 } from "@/components/ui/dialog";
 import { useToast } from "@/hooks/use-toast";
+import { useSimulation } from "@/contexts/SimulationContext";
 
 interface AlgorithmParam {
   name: string;
@@ -25,6 +26,7 @@ interface AlgorithmParam {
 
 const AlgorithmSettings = () => {
   const { toast } = useToast();
+  const { setTasks, setVMs } = useSimulation();
   const [taskInput, setTaskInput] = useState<string>(
     "1,40\n2,60\n3,30\n4,80\n5,50\n6,70"
   );
@@ -128,10 +130,18 @@ const AlgorithmSettings = () => {
       const lines = taskInput.trim().split("\n");
       const parsedTasks = lines.map(line => {
         const [id, length] = line.split(",");
-        return { id: parseInt(id.trim()), length: parseInt(length.trim()) };
+        return { 
+          id: parseInt(id.trim()), 
+          length: parseInt(length.trim()),
+          vm: null,
+          startTime: null,
+          endTime: null
+        };
       });
       
       console.log("Imported tasks:", parsedTasks);
+      setTasks(parsedTasks);
+      
       toast({
         title: "Tasks Imported",
         description: `Successfully imported ${parsedTasks.length} tasks.`
@@ -151,10 +161,17 @@ const AlgorithmSettings = () => {
       const lines = vmInput.trim().split("\n");
       const parsedVMs = lines.map(line => {
         const [id, power] = line.split(",");
-        return { id: parseInt(id.trim()), processingPower: parseInt(power.trim()) };
+        return { 
+          id: parseInt(id.trim()), 
+          processingPower: parseInt(power.trim()),
+          tasks: [],
+          busyUntil: 0
+        };
       });
       
       console.log("Imported VMs:", parsedVMs);
+      setVMs(parsedVMs);
+      
       toast({
         title: "VMs Imported",
         description: `Successfully imported ${parsedVMs.length} virtual machines.`
